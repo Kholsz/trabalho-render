@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Agendamento</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Sistema de Agendamento</h1>
+
+  <div id="cadastro">
+    <h2>Cadastro de Usuário</h2>
+    <input type="text" id="nome" placeholder="Nome">
+    <input type="email" id="email" placeholder="E-mail">
+    <button onclick="cadastrarUsuario()">Cadastrar</button>
+  </div>
+
+  <hr>
+
+  <div id="agendamento">
+    <h2>Novo Agendamento</h2>
+    <input type="text" id="servico" placeholder="Serviço">
+    <input type="date" id="data">
+    <input type="time" id="hora">
+    <button onclick="fazerAgendamento()">Agendar</button>
+  </div>
+
+  <hr>
+
+  <div id="lista">
+    <h2>Agendamentos</h2>
+    <button onclick="listarAgendamentos()">Atualizar Lista</button>
+    <ul id="agendamentos"></ul>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
