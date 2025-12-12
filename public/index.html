@@ -1,285 +1,640 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Agendamento</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sistema Profissional de Agendamento - Personal Trainer</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#ffffff;
+    --card:#ffffff;
+    --accent:#aebdff;
+    --field:#e8ecff;
+    --muted:#666;
+    --danger:#ff6b6b;
+    --success:#4bb543;
+    --radius:18px;
+    --max-width:420px;
+    --shadow:0 8px 30px rgba(60,70,150,0.08);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,system-ui,Arial,sans-serif; background:var(--bg);
+    display:flex; align-items:flex-start; justify-content:center; min-height:100vh; padding:28px;
+  }
+
+  /* App wrapper (centra e limita largura) */
+  .app {
+    width:100%; max-width:var(--max-width);
+  }
+
+  /* Card / container */
+  .card {
+    background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow);
+    margin-bottom:18px;
+  }
+
+  h1, h2 { margin:0 0 12px 0; font-family:"Playfair Display",serif; font-style:italic; color:#111; }
+  p.small { margin:6px 0 12px 0; color:var(--muted); font-size:14px; }
+
+  input[type="text"], input[type="email"], input[type="password"], input[type="date"], select {
+    width:100%; padding:10px 12px; border-radius:10px; border:none; background:var(--field);
+    margin-bottom:10px; outline:none; font-size:14px;
+  }
+
+  .row { display:flex; gap:10px; }
+  .col { flex:1; }
+
+  button {
+    background:var(--accent); color:#fff; border:none; padding:10px 14px; border-radius:10px; cursor:pointer;
+    font-weight:600; width:100%;
+  }
+  button.ghost { background:#f1f1f1; color:#111; }
+  button.small { padding:6px 8px; width:auto; font-size:13px; border-radius:8px; }
+
+  .link { color:#3b4fff; cursor:pointer; text-decoration:underline; font-size:14px; }
+
+  /* services list */
+  .services { display:flex; flex-direction:column; gap:10px; margin-bottom:12px; }
+  .service { padding:12px; border-radius:10px; background:#f6f7ff; border:1px solid #e4e8ff; cursor:pointer; }
+  .service.selected { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+  /* time slots */
+  .slots { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:12px; }
+  .slot { padding:10px; border-radius:10px; text-align:center; background:#efefef; cursor:pointer; font-weight:600; }
+  .slot.disabled { opacity:.45; cursor:not-allowed; }
+  .slot.selected { background:var(--accent); color:#fff; }
+
+  /* lists */
+  ul.list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+  li.item { padding:10px; background:#f8f8ff; border-radius:10px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+
+  .meta { color:#444; font-size:13px; }
+
+  /* filters */
+  .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+
+  /* toast notifications */
+  .toast-wrap { position:fixed; right:20px; top:20px; z-index:1000; display:flex; flex-direction:column; gap:8px; }
+  .toast { padding:10px 12px; border-radius:10px; color:#fff; min-width:200px; box-shadow:0 6px 20px rgba(0,0,0,0.12); }
+  .toast.success{ background:var(--success); }
+  .toast.info{ background:#2d9cff; }
+  .toast.error{ background:var(--danger); }
+
+  /* header */
+  header.app-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .brand { font-size:18px; }
+
+  /* responsive */
+  @media (max-width:420px){
+    body{padding:12px}
+    .app { max-width:100% }
+  }
+
+  /* small helper */
+  .muted { color:var(--muted); font-size:13px; }
+  .right { text-align:right; }
+</style>
 </head>
 <body>
-  <h1>Sistema de Agendamento</h1>
+  <div class="app">
 
-  <div id="home" class="card">
-    <h2>Bem-vindo!</h2>
-    <p>Escolha uma opção abaixo para continuar.</p>
+    <header class="app-header">
+      <div class="brand"><strong>Sistema de Agendamento</strong><div class="muted" style="font-size:12px">Personal Trainer</div></div>
+      <div id="user-btns">
+        <!-- Filled dynamically -->
+      </div>
+    </header>
+
+    <!-- HOME -->
+    <div id="home" class="card">
+      <h1>Sistema<br>de Agendamento</h1>
+      <p class="small">Protótipo funcional, agora com backend (Render). Dados persistem no servidor.</p>
+
+      <div class="row">
+        <div class="col">
+          <button id="btnStart" onclick="ui.show('login')">Agende seu horário</button>
+        </div>
+        <div class="col">
+          <button class="ghost" onclick="ui.show('register')">Criar conta</button>
+        </div>
+      </div>
+
+      <p class="small" style="margin-top:12px">Acesso do profissional? <span class="link" onclick="ui.show('login')">Entrar</span> (ou registre-se como Profissional).</p>
+      <p class="small muted"><strong></strong></p>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="register" class="card" style="display:none;">
+      <h2>Cadastrar conta</h2>
+      <p class="small muted">Escolha tipo: Cliente (acessa painel cliente) ou Profissional (acessa painel profissional).</p>
+      <input id="rNome" type="text" placeholder="Nome completo">
+      <input id="rEmail" type="email" placeholder="E-mail">
+      <input id="rSenha" type="password" placeholder="Senha">
+      <select id="rTipo">
+        <option value="cliente">Cliente</option>
+        <option value="profissional">Profissional</option>
+      </select>
+      <div class="row">
+        <button onclick="actions.register()">Criar conta</button>
+        <button class="ghost" onclick="ui.show('home')">Voltar</button>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="login" class="card" style="display:none;">
+      <h2>Login</h2>
+      <input id="lEmail" type="email" placeholder="E-mail">
+      <input id="lSenha" type="password" placeholder="Senha">
+      <div class="row">
+        <button onclick="actions.login()">Entrar</button>
+        <button class="ghost" onclick="ui.show('home')">Voltar</button>
+      </div>
+      <p class="small muted" style="margin-top:10px">Ainda não tem conta? <span class="link" onclick="ui.show('register')">Cadastre-se</span></p>
+    </div>
+
+    <!-- SELECT SERVICE -->
+    <div id="selectService" class="card" style="display:none;">
+      <h2>Serviços Disponíveis</h2>
+      <div id="servicesList" class="services"></div>
+      <div class="row">
+        <button onclick="actions.nextToDate()">Próximo</button>
+        <button class="ghost" onclick="actions.logout()">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- SELECT DATE & TIME -->
+    <div id="selectDateTime" class="card" style="display:none;">
+      <h2>Escolha Data e Horário</h2>
+      <p class="muted">Selecione uma data e um horário disponível. Limite de vagas por horário disponível.</p>
+
+      <div class="row" style="margin-bottom:8px;">
+        <div class="col"><input id="selDate" type="date"></div>
+        <div class="col"><select id="capacitySelect" title="Limite de vagas por horário"></select></div>
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <label class="muted">Horários (disponíveis para a data selecionada)</label>
+      </div>
+      <div id="slotsWrap" class="slots"></div>
+
+      <div class="row">
+        <button onclick="actions.confirmBooking()">Confirmar agendamento</button>
+        <button class="ghost" onclick="ui.show('selectService')">Voltar</button>
+      </div>
+    </div>
+
+    <!-- CLIENT DASHBOARD -->
+    <div id="clientDashboard" class="card" style="display:none;">
+      <h2>Meu Painel</h2>
+      <p class="muted" id="clientStats"></p>
+
+      <h3 style="font-size:16px;margin:12px 0 8px 0">Próximo agendamento</h3>
+      <div id="nextBooking" class="card" style="display:block;padding:12px;margin-bottom:10px;"></div>
+
+      <h3 style="font-size:16px;margin:12px 0 8px 0">Meus agendamentos</h3>
+      <ul id="myBookings" class="list"></ul>
+
+      <div style="margin-top:12px;">
+        <button onclick="ui.show('selectService')">Novo agendamento</button>
+        <button class="ghost" onclick="actions.logout()">Sair</button>
+      </div>
+    </div>
+
+    <!-- PROFESSIONAL PANEL -->
+    <div id="proPanel" class="card" style="display:none;">
+      <h2>Painel do Profissional</h2>
+
+      <div class="filters">
+        <select id="filterService"><option value="">Todos os serviços</option></select>
+        <input id="filterDateFrom" type="date" placeholder="De">
+        <input id="filterDateTo" type="date" placeholder="Até">
+        <select id="filterTime"><option value="">Todos horários</option></select>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button onclick="actions.loadGlobalBookings()">Atualizar</button>
+        <button class="ghost" onclick="actions.exportCSV()">Exportar CSV</button>
+        <button class="ghost" onclick="actions.logout()">Sair</button>
+      </div>
+
+      <h3 style="font-size:16px;margin:8px 0">Agendamentos</h3>
+      <ul id="globalBookings" class="list"></ul>
+    </div>
+
+    <!-- toast area -->
+    <div id="toastWrap" class="toast-wrap"></div>
+
   </div>
 
-  <div id="register" class="card" style="display:none">
-    <h2>Cadastro</h2>
-    <input type="text" id="rNome" placeholder="Nome">
-    <input type="email" id="rEmail" placeholder="E-mail">
-    <input type="password" id="rSenha" placeholder="Senha">
-    <select id="rTipo">
-      <option value="cliente">Cliente</option>
-      <option value="profissional">Profissional</option>
-    </select>
-    <button onclick="actions.register()">Cadastrar</button>
-  </div>
+<script>
+/* ============================
+   STORAGE -> FETCH (Render API)
+   ============================ */
 
-  <div id="login" class="card" style="display:none">
-    <h2>Login</h2>
-    <input type="email" id="lEmail" placeholder="E-mail">
-    <input type="password" id="lSenha" placeholder="Senha">
-    <button onclick="actions.login()">Entrar</button>
-  </div>
+const API_BASE = "https://trabalho-render-1.onrender.com/api";
 
-  <div id="selectService" class="card" style="display:none">
-    <h2>Escolha o Serviço</h2>
-    <div id="servicesList"></div>
-    <button onclick="actions.nextToDate()">Avançar</button>
-  </div>
-
-  <div id="selectDateTime" class="card" style="display:none">
-    <h2>Escolha o Horário</h2>
-    <input type="date" id="selDate">
-    <label>Capacidade:</label>
-    <select id="capacitySelect"></select>
-    <div id="slotsWrap"></div>
-    <button onclick="actions.confirmBooking()">Confirmar Agendamento</button>
-  </div>
-
-  <div id="clientDashboard" class="card" style="display:none">
-    <h2>Seus Agendamentos</h2>
-    <ul id="myBookings"></ul>
-  </div>
-
-  <div id="proPanel" class="card" style="display:none">
-    <h2>Painel do Profissional</h2>
-    <ul id="globalBookings"></ul>
-  </div>
-
-  <div id="user-btns" style="margin-bottom:20px;"></div>
-  <div id="toastWrap"></div>
-
-  <script>
-  const API_BASE = "https://trabalho-render-1.onrender.com/api";
-
-  // Funções de comunicação com o servidor
-  const DB = {
-    async getUsers() {
+const DB = {
+  // Users
+  async getUsers(){ 
+    try {
       const res = await fetch(`${API_BASE}/users`);
+      if(!res.ok) return [];
       return await res.json();
-    },
-    async addUser(user) {
-      await fetch(`${API_BASE}/users`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user)
-      });
-    },
-    async getGlobal() {
+    } catch(e){ return []; }
+  },
+  async addUser(u){
+    await fetch(`${API_BASE}/users`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(u)
+    });
+  },
+
+  // Bookings
+  async getGlobal(){
+    try {
       const res = await fetch(`${API_BASE}/bookings`);
+      if(!res.ok) return [];
       return await res.json();
-    },
-    async addBooking(booking) {
-      await fetch(`${API_BASE}/bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(booking)
-      });
-    },
-    async deleteBooking(id) {
-      await fetch(`${API_BASE}/bookings/${id}`, { method: "DELETE" });
-    },
-    async getSettings() {
+    } catch(e){ return []; }
+  },
+  async addBooking(b){
+    await fetch(`${API_BASE}/bookings`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(b)
+    });
+  },
+  async deleteBooking(id){
+    await fetch(`${API_BASE}/bookings/${id}`, { method: "DELETE" });
+  },
+
+  // Settings
+  async getSettings(){
+    try {
       const res = await fetch(`${API_BASE}/settings`);
+      if(!res.ok) return {};
       return await res.json();
-    },
-    async setSettings(settings) {
-      await fetch(`${API_BASE}/settings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings)
-      });
-    },
-    getLogged() { return JSON.parse(localStorage.getItem("logged") || "null"); },
-    setLogged(u) { localStorage.setItem("logged", JSON.stringify(u)); },
-    clearLogged() { localStorage.removeItem("logged"); }
-  };
+    } catch(e){ return {}; }
+  },
+  async setSettings(s){
+    await fetch(`${API_BASE}/settings`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(s)
+    });
+  },
 
-  // ======== Dados e UI ========
-  const DATA = {
-    services: [
-      { id: "s1", nome: "Musculação Personalizada", descricao: "Treinos focados no seu objetivo físico." },
-      { id: "s2", nome: "Avaliação Física Completa", descricao: "Análise corporal e metabólica detalhada." },
-      { id: "s3", nome: "Treino Funcional", descricao: "Movimentos naturais e dinâmicos para performance." },
-      { id: "s4", nome: "Consultoria Online", descricao: "Acompanhamento remoto com planilhas e ajustes." }
-    ],
-    times: ["07:00","08:00","09:00","10:00","11:00","15:00","16:00","18:00"],
-    selectedServiceId: null,
-    selectedDate: null,
-    selectedTime: null,
-    capacityPerSlot: 3
-  };
+  // Logged user session (kept in sessionStorage)
+  getLogged(){ return JSON.parse(sessionStorage.getItem('logged')||'null'); },
+  setLogged(u){ sessionStorage.setItem('logged', JSON.stringify(u)); },
+  clearLogged(){ sessionStorage.removeItem('logged'); }
+};
 
-  const ui = {
-    show(id){
-      document.querySelectorAll('.card').forEach(c=>c.style.display='none');
-      document.getElementById(id).style.display='block';
-      ui.renderHeader();
-      if(id==='selectService') ui.renderServices();
-      if(id==='selectDateTime') ui.renderSlots();
-      if(id==='clientDashboard') actions.loadClientBookings();
-      if(id==='proPanel') actions.loadGlobalBookings();
-    },
-    toast(msg, type='info', time=3000){
-      const wrap = document.getElementById('toastWrap');
-      const t = document.createElement('div');
-      t.className = 'toast ' + (type||'info');
-      t.textContent = msg;
-      wrap.appendChild(t);
-      setTimeout(()=>{ t.style.opacity='0'; }, time-500);
-      setTimeout(()=>wrap.removeChild(t), time);
-    },
-    renderHeader(){
-      const c = document.getElementById("user-btns");
-      c.innerHTML = "";
-      const user = DB.getLogged();
-      if(user){
-        const box = document.createElement("div");
-        box.innerHTML = `<div style="text-align:right"><strong>${user.nome}</strong><div style="font-size:12px;color:#ccc">${user.tipo}</div></div>`;
-        const btns = document.createElement("div");
-        btns.style.display="flex"; btns.style.gap="8px";
-        const p1 = document.createElement("button");
-        p1.className="small";
-        p1.textContent=user.tipo==="cliente"?"Painel":"Painel Prof";
-        p1.onclick=()=>ui.show(user.tipo==="cliente"?"clientDashboard":"proPanel");
-        const s = document.createElement("button");
-        s.className="small"; s.textContent="Sair"; s.onclick=actions.logout;
-        btns.append(p1,s);
-        c.append(box,btns);
-      } else {
-        const b1=document.createElement("button");b1.className="small";b1.textContent="Entrar";b1.onclick=()=>ui.show("login");
-        const b2=document.createElement("button");b2.className="small";b2.textContent="Registrar";b2.onclick=()=>ui.show("register");
-        c.append(b1,b2);
-      }
-    },
-    renderServices(){
-      const wrap=document.getElementById("servicesList");wrap.innerHTML="";
-      DATA.services.forEach(s=>{
-        const el=document.createElement("div");
-        el.className="service"+(DATA.selectedServiceId===s.id?" selected":"");
-        el.innerHTML=`<strong>${s.nome}</strong><div class="muted" style="font-size:13px">${s.descricao}</div>`;
-        el.onclick=()=>{DATA.selectedServiceId=s.id;document.querySelectorAll(".service").forEach(x=>x.classList.remove("selected"));el.classList.add("selected");};
-        wrap.append(el);
-      });
-    },
-    async renderSlots(){
-      const wrap=document.getElementById("slotsWrap");wrap.innerHTML="";
-      const capSel=document.getElementById("capacitySelect");capSel.innerHTML="";
-      [1,2,3,4,5,6].forEach(n=>{
-        const o=document.createElement("option");o.value=n;o.textContent=n+" vagas";if(n===DATA.capacityPerSlot)o.selected=true;capSel.append(o);
-      });
-      capSel.onchange=async e=>{DATA.capacityPerSlot=Number(e.target.value);await DB.setSettings({capacidadePorHorario:DATA.capacityPerSlot});};
-      const date=document.getElementById("selDate");
-      if(!date.value) date.value=new Date().toISOString().slice(0,10);
-      DATA.selectedDate=date.value;
-      date.onchange=e=>{DATA.selectedDate=e.target.value;ui.renderSlots();};
-      const all=await DB.getGlobal();
-      DATA.times.forEach(t=>{
-        const slot=document.createElement("div");
-        slot.className="slot";slot.textContent=t;
-        const occ=all.filter(a=>a.dataISO===DATA.selectedDate && a.horario===t && a.servicoId===DATA.selectedServiceId).length;
-        const info=document.createElement("div");info.style.fontSize="12px";info.innerHTML=`<span class="muted">${occ}/${DATA.capacityPerSlot} ocup.</span>`;
-        slot.append(info);
-        if(occ>=DATA.capacityPerSlot)slot.classList.add("disabled");
-        slot.onclick=()=>{if(slot.classList.contains("disabled"))return ui.toast("Horário cheio","error");DATA.selectedTime=t;document.querySelectorAll(".slot").forEach(x=>x.classList.remove("selected"));slot.classList.add("selected");};
-        wrap.append(slot);
-      });
-    }
-  };
+/* ============================
+   Data & UI (same as original, adapted to async)
+   ============================ */
 
-  const actions = {
-    async register(){
-      const nome=document.getElementById("rNome").value.trim();
-      const email=document.getElementById("rEmail").value.trim().toLowerCase();
-      const senha=document.getElementById("rSenha").value;
-      const tipo=document.getElementById("rTipo").value;
-      if(!nome||!email||!senha)return ui.toast("Preencha todos os campos","error");
-      const users=await DB.getUsers();
-      if(users.find(u=>u.email===email))return ui.toast("E-mail já cadastrado","error");
-      await DB.addUser({nome,email,senha,tipo,agendamentos:[]});
-      DB.setLogged({nome,email,tipo,agendamentos:[]});
-      ui.toast("Conta criada com sucesso","success");
-      ui.show(tipo==="profissional"?"proPanel":"clientDashboard");
-    },
+const DATA = {
+  services: [
+    { id:'s1', nome:'Musculação Personalizada', descricao:'Treinos focados no seu objetivo físico.' },
+    { id:'s2', nome:'Avaliação Física Completa', descricao:'Análise corporal e metabólica detalhada.' },
+    { id:'s3', nome:'Treino Funcional', descricao:'Movimentos naturais e dinâmicos para performance.' },
+    { id:'s4', nome:'Consultoria Online', descricao:'Acompanhamento remoto com planilhas e ajustes.' }
+  ],
+  times: ['07:00','08:00','09:00','10:00','11:00','15:00','16:00','18:00'],
+  selectedServiceId: null,
+  selectedDate: null,
+  selectedTime: null,
+  capacityPerSlot: 3
+};
 
-    async login(){
-      const email=document.getElementById("lEmail").value.trim().toLowerCase();
-      const senha=document.getElementById("lSenha").value;
-      const users=await DB.getUsers();
-      const user=users.find(u=>u.email===email && u.senha===senha);
-      if(!user)return ui.toast("E-mail ou senha incorretos","error");
-      DB.setLogged(user);
-      ui.toast("Login efetuado","success");
-      setTimeout(()=>ui.show(user.tipo==="profissional"?"proPanel":"clientDashboard"),500);
-    },
-
-    logout(){DB.clearLogged();ui.toast("Desconectado","info");ui.show("home");},
-
-    nextToDate(){if(!DATA.selectedServiceId)return ui.toast("Escolha um serviço","error");ui.show("selectDateTime");},
-
-    async confirmBooking(){
-      if(!DATA.selectedServiceId)return ui.toast("Selecione um serviço","error");
-      if(!DATA.selectedDate)return ui.toast("Selecione uma data","error");
-      if(!DATA.selectedTime)return ui.toast("Selecione um horário","error");
-      const user=DB.getLogged();if(!user)return ui.show("login");
-      const service=DATA.services.find(s=>s.id===DATA.selectedServiceId);
-      const booking={id:"b_"+Date.now(),nome:user.nome,email:user.email,servicoId:DATA.selectedServiceId,servicoNome:service.nome,horario:DATA.selectedTime,dataISO:DATA.selectedDate,dataReadable:new Date(DATA.selectedDate+"T00:00").toLocaleDateString()+" "+DATA.selectedTime,createdAt:new Date().toISOString()};
-      await DB.addBooking(booking);
-      ui.toast("Agendamento confirmado!","success");
-      setTimeout(()=>ui.show("clientDashboard"),800);
-    },
-
-    async loadClientBookings(){
-      const user=DB.getLogged();if(!user)return ui.show("login");
-      const all=await DB.getGlobal();
-      const mine=all.filter(a=>a.email===user.email);
-      const list=document.getElementById("myBookings");list.innerHTML="";
-      if(!mine.length){list.innerHTML="<li class='item'><div class='meta'>Nenhum agendamento.</div></li>";return;}
-      mine.forEach(b=>{
-        const li=document.createElement("li");li.className="item";
-        li.innerHTML=`<div><strong>${b.servicoNome}</strong><div class="meta">${b.dataReadable}</div></div>`;
-        const cancel=document.createElement("button");cancel.className="small";cancel.textContent="Cancelar";
-        cancel.onclick=async()=>{if(confirm("Cancelar esse agendamento?")){await DB.deleteBooking(b.id);ui.toast("Agendamento cancelado","success");actions.loadClientBookings();}};
-        li.append(cancel);list.append(li);
-      });
-    },
-
-    async loadGlobalBookings(){
-      const all=await DB.getGlobal();
-      const list=document.getElementById("globalBookings");list.innerHTML="";
-      if(!all.length){list.innerHTML="<li class='item'><div class='meta'>Nenhum agendamento encontrado.</div></li>";return;}
-      all.forEach(b=>{
-        const li=document.createElement("li");li.className="item";
-        li.innerHTML=`<div><strong>${b.servicoNome}</strong><div class="meta">${b.dataReadable} — ${b.nome} (${b.email})</div></div>`;
-        const cancel=document.createElement("button");cancel.className="small";cancel.textContent="Cancelar";
-        cancel.onclick=async()=>{if(confirm("Cancelar esse agendamento?")){await DB.deleteBooking(b.id);ui.toast("Cancelado","success");actions.loadGlobalBookings();}};
-        li.append(cancel);list.append(li);
-      });
-    }
-  };
-
-  document.addEventListener("DOMContentLoaded", async ()=>{
-    const settings=await DB.getSettings();
-    if(settings.capacidadePorHorario)DATA.capacityPerSlot=settings.capacidadePorHorario;
+const ui = {
+  async show(id){
+    document.querySelectorAll('.card').forEach(c=>c.style.display='none');
+    document.getElementById(id).style.display='block';
     ui.renderHeader();
-    const logged=DB.getLogged();
-    if(logged)ui.show(logged.tipo==="profissional"?"proPanel":"clientDashboard");
-    else ui.show("home");
+    if(id==='selectService') ui.renderServices();
+    if(id==='selectDateTime') await ui.renderSlots();
+    if(id==='clientDashboard') await actions.loadClientBookings();
+    if(id==='proPanel') await actions.loadGlobalBookings();
+  },
+  toast(msg, type='info', time=3000){
+    const wrap = document.getElementById('toastWrap');
+    const t = document.createElement('div');
+    t.className = 'toast ' + (type||'info');
+    t.textContent = msg;
+    wrap.appendChild(t);
+    setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(8px)'; }, time-500);
+    setTimeout(()=>wrap.removeChild(t), time);
+  },
+  renderHeader(){
+    const container = document.getElementById('user-btns');
+    container.innerHTML = '';
+    const user = DB.getLogged();
+    if(user){
+      const span = document.createElement('div');
+      span.style.fontSize='14px';
+      span.innerHTML = `<div style="text-align:right"><strong>${user.nome}</strong><div style="font-size:12px;color:#666">${user.tipo}</div></div>`;
+      const btns = document.createElement('div');
+      btns.style.display='flex'; btns.style.gap='8px';
+      if(user.tipo==='cliente'){
+        const b = document.createElement('button'); b.className='small'; b.textContent='Painel'; b.onclick=()=>ui.show('clientDashboard'); btns.appendChild(b);
+      } else {
+        const b = document.createElement('button'); b.className='small'; b.textContent='Painel Prof'; b.onclick=()=>ui.show('proPanel'); btns.appendChild(b);
+      }
+      const out = document.createElement('button'); out.className='small'; out.textContent='Sair'; out.onclick=actions.logout; btns.appendChild(out);
+      container.appendChild(span); container.appendChild(btns);
+    } else {
+      const b1 = document.createElement('button'); b1.className='small'; b1.textContent='Entrar'; b1.onclick=()=>ui.show('login');
+      const b2 = document.createElement('button'); b2.className='small'; b2.textContent='Registrar'; b2.onclick=()=>ui.show('register');
+      container.appendChild(b1); container.appendChild(b2);
+    }
+  },
+  renderServices(){
+    const wrap = document.getElementById('servicesList');
+    wrap.innerHTML='';
+    DATA.services.forEach(s=>{
+      const el = document.createElement('div');
+      el.className = 'service' + (DATA.selectedServiceId===s.id ? ' selected' : '');
+      el.dataset.sid = s.id;
+      el.innerHTML = `<strong>${s.nome}</strong><div class="muted" style="font-size:13px">${s.descricao}</div>`;
+      el.onclick = ()=> {
+        DATA.selectedServiceId = s.id;
+        document.querySelectorAll('.service').forEach(x=>x.classList.remove('selected'));
+        el.classList.add('selected');
+      };
+      wrap.appendChild(el);
+    });
+  },
+  async renderSlots(){
+    const wrap = document.getElementById('slotsWrap');
+    wrap.innerHTML = '';
+    const capSel = document.getElementById('capacitySelect');
+    capSel.innerHTML = '';
+    [1,2,3,4,5,6].forEach(n=>{
+      const o = document.createElement('option'); o.value=n; o.textContent=n + ' vagas';
+      if(n===DATA.capacityPerSlot) o.selected=true;
+      capSel.appendChild(o);
+    });
+    capSel.onchange = async (e) => { DATA.capacityPerSlot = Number(e.target.value); await DB.setSettings({ capacidadePorHorario: DATA.capacityPerSlot }); ui.renderSlots(); };
+
+    const dateInput = document.getElementById('selDate');
+    if(!dateInput.value) {
+      const today = new Date().toISOString().slice(0,10);
+      dateInput.value = today;
+    }
+    DATA.selectedDate = dateInput.value;
+    dateInput.onchange = (e)=>{ DATA.selectedDate = e.target.value; ui.renderSlots(); };
+
+    const global = await DB.getGlobal();
+    DATA.times.forEach(t=>{
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.textContent = t;
+      const occupied = global.filter(a => a.dataISO===DATA.selectedDate && a.horario===t && a.servicoId===DATA.selectedServiceId).length;
+      const cap = DATA.capacityPerSlot;
+      const info = document.createElement('div');
+      info.style.fontSize='12px'; info.style.marginTop='6px';
+      info.innerHTML = `<span class="muted">${occupied}/${cap} ocup.</span>`;
+      slot.appendChild(info);
+      if(occupied >= cap){ slot.classList.add('disabled'); }
+      slot.onclick = () => {
+        if(slot.classList.contains('disabled')) { ui.toast('Horário cheio. Escolha outro.', 'error', 2500); return; }
+        if(!DATA.selectedServiceId){ ui.toast('Selecione primeiro o serviço.', 'error',2000); return; }
+        document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected'));
+        slot.classList.add('selected');
+        DATA.selectedTime = t;
+      };
+      wrap.appendChild(slot);
+    });
+  }
+};
+
+const actions = {
+  async register(){
+    const nome = document.getElementById('rNome').value.trim();
+    const email = document.getElementById('rEmail').value.trim().toLowerCase();
+    const senha = document.getElementById('rSenha').value;
+    const tipo = document.getElementById('rTipo').value;
+    if(!nome || !email || !senha) return ui.toast('Preencha todos os campos', 'error', 2000);
+    const users = await DB.getUsers();
+    if(users.find(u=>u.email===email)) return ui.toast('E-mail já cadastrado', 'error',2000);
+    await DB.addUser({ nome, email, senha, tipo });
+    ui.toast('Conta criada com sucesso', 'success', 2200);
+    // save logged in session (sessionStorage)
+    DB.setLogged({ nome, email, tipo });
+    ui.show(tipo==='profissional' ? 'proPanel' : 'clientDashboard');
+  },
+
+  async login(){
+    const email = document.getElementById('lEmail').value.trim().toLowerCase();
+    const senha = document.getElementById('lSenha').value;
+    const users = await DB.getUsers();
+    const user = users.find(u=>u.email===email && u.senha===senha);
+    if(!user) return ui.toast('E-mail ou senha incorretos', 'error', 2000);
+    DB.setLogged({ nome: user.nome, email: user.email, tipo: user.tipo });
+    ui.toast('Login efetuado', 'success', 1500);
+    setTimeout(()=> ui.show(user.tipo==='profissional' ? 'proPanel' : 'clientDashboard'), 500);
+  },
+
+  logout(){
+    DB.clearLogged();
+    ui.toast('Desconectado', 'info', 1200);
+    ui.show('home');
+  },
+
+  nextToDate(){
+    if(!DATA.selectedServiceId) return ui.toast('Escolha um serviço', 'error', 1500);
+    ui.show('selectDateTime');
+  },
+
+  async confirmBooking(){
+    if(!DATA.selectedServiceId) return ui.toast('Selecione um serviço', 'error', 1500);
+    if(!DATA.selectedDate) { ui.toast('Selecione uma data', 'error',1500); return; }
+    if(!DATA.selectedTime) { ui.toast('Selecione um horário', 'error',1500); return; }
+
+    const user = DB.getLogged();
+    if(!user) { ui.toast('Faça login para prosseguir', 'error', 1600); ui.show('login'); return; }
+
+    // check occupancy on server
+    const global = await DB.getGlobal();
+    const currentCount = global.filter(a => a.dataISO===DATA.selectedDate && a.horario===DATA.selectedTime && a.servicoId===DATA.selectedServiceId).length;
+    if(currentCount >= DATA.capacityPerSlot) { ui.toast('Vagas esgotadas para esse horário', 'error', 1800); ui.renderSlots(); return; }
+
+    const serviceObj = DATA.services.find(s=>s.id===DATA.selectedServiceId);
+    const booking = {
+      id: 'b_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+      nome: user.nome,
+      email: user.email,
+      servicoId: DATA.selectedServiceId,
+      servicoNome: serviceObj.nome,
+      horario: DATA.selectedTime,
+      dataISO: DATA.selectedDate,
+      dataReadable: new Date(DATA.selectedDate + 'T00:00:00').toLocaleDateString() + ' ' + DATA.selectedTime,
+      createdAt: new Date().toISOString()
+    };
+
+    // save booking on server
+    await DB.addBooking(booking);
+
+    ui.toast('Agendamento confirmado — preparando confirmação por e-mail...', 'success', 2400);
+
+    setTimeout(()=>{
+      ui.toast(`E-mail de confirmação enviado para ${booking.email}`, 'info', 2600);
+    }, 600);
+
+    // reset selection
+    DATA.selectedServiceId = null; DATA.selectedTime = null;
+    document.getElementById('selDate').value = '';
+    setTimeout(()=> ui.show('clientDashboard'), 800);
+  },
+
+  async loadClientBookings(){
+    const user = DB.getLogged();
+    if(!user){ ui.show('login'); return; }
+    const list = document.getElementById('myBookings'); list.innerHTML='';
+    const all = await DB.getGlobal();
+    const sorted = (all.filter(a=>a.email===user.email) || []).slice().sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt));
+    if(sorted.length===0){
+      list.innerHTML = '<li class="item"><div class="meta">Nenhum agendamento.</div></li>';
+      document.getElementById('nextBooking').innerHTML = '<div class="meta">Sem agendamentos futuros.</div>';
+      document.getElementById('clientStats').textContent = 'Total de agendamentos: 0';
+      return;
+    }
+    const future = sorted.filter(a => new Date(a.dataISO + 'T' + a.horario) >= new Date());
+    const next = future.length ? future.reduce((p,c)=> new Date(p.dataISO + 'T' + p.horario) < new Date(c.dataISO + 'T' + c.horario) ? p : c ) : sorted[0];
+    document.getElementById('nextBooking').innerHTML = `<strong>${next.servicoNome}</strong><div class="muted">${next.dataReadable}</div>`;
+    document.getElementById('clientStats').textContent = `Total de agendamentos: ${sorted.length}`;
+
+    sorted.forEach(b=>{
+      const li = document.createElement('li'); li.className='item';
+      li.innerHTML = `<div>
+        <div><strong>${b.servicoNome}</strong></div>
+        <div class="meta">${b.dataReadable}</div>
+      </div>`;
+      const btns = document.createElement('div');
+      const cancel = document.createElement('button'); cancel.className='small'; cancel.textContent='Cancelar';
+      cancel.onclick = async ()=> { if(confirm('Cancelar esse agendamento?')) { await DB.deleteBooking(b.id); ui.toast('Agendamento cancelado', 'success', 1400); actions.loadClientBookings(); } };
+      btns.appendChild(cancel);
+      li.appendChild(btns);
+      list.appendChild(li);
+    });
+  },
+
+  async loadGlobalBookings(){
+    const serv = document.getElementById('filterService').value;
+    const dateFrom = document.getElementById('filterDateFrom').value;
+    const dateTo = document.getElementById('filterDateTo').value;
+    const time = document.getElementById('filterTime').value;
+
+    const all = (await DB.getGlobal()).slice().sort((a,b)=> new Date(a.dataISO+'T'+a.horario) - new Date(b.dataISO+'T'+b.horario));
+    let filtered = all.filter(a=>{
+      if(serv && a.servicoId !== serv) return false;
+      if(time && a.horario !== time) return false;
+      if(dateFrom && a.dataISO < dateFrom) return false;
+      if(dateTo && a.dataISO > dateTo) return false;
+      return true;
+    });
+
+    const wrap = document.getElementById('globalBookings'); wrap.innerHTML='';
+    if(filtered.length===0){ wrap.innerHTML = '<li class="item"><div class="meta">Nenhum agendamento encontrado.</div></li>'; return; }
+    filtered.forEach(b=>{
+      const li = document.createElement('li'); li.className='item';
+      li.innerHTML = `<div>
+        <div><strong>${b.servicoNome}</strong></div>
+        <div class="meta">${b.dataReadable} — ${b.nome} (${b.email})</div>
+      </div>`;
+      const right = document.createElement('div');
+      right.style.display='flex'; right.style.gap='8px';
+      const notify = document.createElement('button'); notify.className='small'; notify.textContent='Notificar';
+      notify.onclick = ()=> { ui.toast('Notificação simulada enviada', 'info',1500); };
+      const cancel = document.createElement('button'); cancel.className='small'; cancel.textContent='Cancelar';
+      cancel.onclick = async ()=> { if(confirm('Cancelar esse agendamento (global)?')) { await DB.deleteBooking(b.id); ui.toast('Agendamento cancelado (global)', 'success', 1600); actions.loadGlobalBookings(); } };
+      right.appendChild(notify); right.appendChild(cancel);
+      li.appendChild(right);
+      wrap.appendChild(li);
+    });
+  },
+
+  async simulateEmail(to, service, when){
+    ui.toast(`Enviando e-mail para ${to}...`, 'info', 1500);
+    setTimeout(()=> ui.toast(`E-mail enviado: ${service} — ${when}`, 'success', 2200), 1200);
+  },
+
+  async exportCSV(){
+    const all = await DB.getGlobal();
+    if(!all.length) return ui.toast('Sem agendamentos para exportar', 'error', 1500);
+    const header = ['id','servico','data','horario','nome','email','criadoEm'];
+    const rows = all.map(a => [a.id, `"${a.servicoNome}"`, a.dataISO, a.horario, `"${a.nome}"`, a.email, a.createdAt].join(','));
+    const csv = [header.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download = 'agendamentos.csv'; a.click();
+    URL.revokeObjectURL(url);
+    ui.toast('CSV gerado e baixado', 'success', 1500);
+  }
+};
+
+/* ============================
+   Initialization
+   ============================ */
+
+async function initDefaults(){
+  // ensure admin exists on server
+  try {
+    const users = await DB.getUsers();
+    if(!users.some(u=>u.email==='admin')){
+      await DB.addUser({ nome:'Administrador', email:'admin', senha:'1234', tipo:'profissional' });
+    }
+  } catch(e){ /* ignore */ }
+
+  // ensure settings exist
+  try {
+    const settings = await DB.getSettings();
+    if(!settings || !settings.capacidadePorHorario){
+      await DB.setSettings({ capacidadePorHorario: 3 });
+    }
+  } catch(e){ /* ignore */ }
+}
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+  // populate filters
+  const fService = document.getElementById('filterService');
+  const fTime = document.getElementById('filterTime');
+  DATA.services.forEach(s=>{
+    const o = document.createElement('option'); o.value = s.id; o.textContent = s.nome; fService.appendChild(o);
+  });
+  DATA.times.forEach(t=>{
+    const o = document.createElement('option'); o.value = t; o.textContent = t; fTime.appendChild(o);
   });
 
-  window.ui=ui;window.actions=actions;
-  </script>
+  // run defaults and set capacity
+  await initDefaults();
+  const settings = await DB.getSettings();
+  if(settings && settings.capacidadePorHorario) DATA.capacityPerSlot = settings.capacidadePorHorario;
+
+  // set date min
+  const dateInputs = document.querySelectorAll('input[type="date"]');
+  const today = new Date().toISOString().slice(0,10);
+  dateInputs.forEach(d=> d.setAttribute('min', today));
+
+  ui.renderHeader();
+
+  const logged = DB.getLogged();
+  if(logged){
+    setTimeout(()=> ui.show(logged.tipo==='profissional' ? 'proPanel' : 'clientDashboard'), 300);
+  } else {
+    ui.show('home');
+  }
+});
+
+window.ui = ui;
+window.actions = actions;
+</script>
 </body>
 </html>
