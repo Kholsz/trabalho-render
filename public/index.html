@@ -26,12 +26,10 @@
     display:flex; align-items:flex-start; justify-content:center; min-height:100vh; padding:28px;
   }
 
-  /* App wrapper (centra e limita largura) */
   .app {
     width:100%; max-width:var(--max-width);
   }
 
-  /* Card / container */
   .card {
     background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow);
     margin-bottom:18px;
@@ -57,44 +55,36 @@
 
   .link { color:#3b4fff; cursor:pointer; text-decoration:underline; font-size:14px; }
 
-  /* services list */
   .services { display:flex; flex-direction:column; gap:10px; margin-bottom:12px; }
   .service { padding:12px; border-radius:10px; background:#f6f7ff; border:1px solid #e4e8ff; cursor:pointer; }
   .service.selected { background:var(--accent); color:#fff; border-color:var(--accent); }
 
-  /* time slots */
   .slots { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:12px; }
   .slot { padding:10px; border-radius:10px; text-align:center; background:#efefef; cursor:pointer; font-weight:600; }
   .slot.disabled { opacity:.45; cursor:not-allowed; }
   .slot.selected { background:var(--accent); color:#fff; }
 
-  /* lists */
   ul.list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
   li.item { padding:10px; background:#f8f8ff; border-radius:10px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
 
   .meta { color:#444; font-size:13px; }
 
-  /* filters */
   .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
 
-  /* toast notifications */
   .toast-wrap { position:fixed; right:20px; top:20px; z-index:1000; display:flex; flex-direction:column; gap:8px; }
   .toast { padding:10px 12px; border-radius:10px; color:#fff; min-width:200px; box-shadow:0 6px 20px rgba(0,0,0,0.12); }
   .toast.success{ background:var(--success); }
   .toast.info{ background:#2d9cff; }
   .toast.error{ background:var(--danger); }
 
-  /* header */
   header.app-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
   .brand { font-size:18px; }
 
-  /* responsive */
   @media (max-width:420px){
     body{padding:12px}
     .app { max-width:100% }
   }
 
-  /* small helper */
   .muted { color:var(--muted); font-size:13px; }
   .right { text-align:right; }
 </style>
@@ -105,14 +95,12 @@
     <header class="app-header">
       <div class="brand"><strong>Sistema de Agendamento</strong><div class="muted" style="font-size:12px">Personal Trainer</div></div>
       <div id="user-btns">
-        <!-- Filled dynamically -->
       </div>
     </header>
 
-    <!-- HOME -->
     <div id="home" class="card">
       <h1>Sistema<br>de Agendamento</h1>
-      <p class="small">Protótipo funcional, agora com backend (Render). Dados persistem no servidor.</p>
+      <p class="small"></p>
 
       <div class="row">
         <div class="col">
@@ -127,7 +115,6 @@
       <p class="small muted"><strong></strong></p>
     </div>
 
-    <!-- REGISTER -->
     <div id="register" class="card" style="display:none;">
       <h2>Cadastrar conta</h2>
       <p class="small muted">Escolha tipo: Cliente (acessa painel cliente) ou Profissional (acessa painel profissional).</p>
@@ -144,7 +131,6 @@
       </div>
     </div>
 
-    <!-- LOGIN -->
     <div id="login" class="card" style="display:none;">
       <h2>Login</h2>
       <input id="lEmail" type="email" placeholder="E-mail">
@@ -156,7 +142,6 @@
       <p class="small muted" style="margin-top:10px">Ainda não tem conta? <span class="link" onclick="ui.show('register')">Cadastre-se</span></p>
     </div>
 
-    <!-- SELECT SERVICE -->
     <div id="selectService" class="card" style="display:none;">
       <h2>Serviços Disponíveis</h2>
       <div id="servicesList" class="services"></div>
@@ -166,7 +151,6 @@
       </div>
     </div>
 
-    <!-- SELECT DATE & TIME -->
     <div id="selectDateTime" class="card" style="display:none;">
       <h2>Escolha Data e Horário</h2>
       <p class="muted">Selecione uma data e um horário disponível. Limite de vagas por horário disponível.</p>
@@ -187,7 +171,6 @@
       </div>
     </div>
 
-    <!-- CLIENT DASHBOARD -->
     <div id="clientDashboard" class="card" style="display:none;">
       <h2>Meu Painel</h2>
       <p class="muted" id="clientStats"></p>
@@ -204,7 +187,6 @@
       </div>
     </div>
 
-    <!-- PROFESSIONAL PANEL -->
     <div id="proPanel" class="card" style="display:none;">
       <h2>Painel do Profissional</h2>
 
@@ -225,20 +207,15 @@
       <ul id="globalBookings" class="list"></ul>
     </div>
 
-    <!-- toast area -->
     <div id="toastWrap" class="toast-wrap"></div>
 
   </div>
 
 <script>
-/* ============================
-   STORAGE -> FETCH (Render API)
-   ============================ */
 
 const API_BASE = "https://trabalho-render-1.onrender.com/api";
 
 const DB = {
-  // Users
   async getUsers(){ 
     try {
       const res = await fetch(`${API_BASE}/users`);
@@ -254,7 +231,6 @@ const DB = {
     });
   },
 
-  // Bookings
   async getGlobal(){
     try {
       const res = await fetch(`${API_BASE}/bookings`);
@@ -273,7 +249,6 @@ const DB = {
     await fetch(`${API_BASE}/bookings/${id}`, { method: "DELETE" });
   },
 
-  // Settings
   async getSettings(){
     try {
       const res = await fetch(`${API_BASE}/settings`);
@@ -289,15 +264,10 @@ const DB = {
     });
   },
 
-  // Logged user session (kept in sessionStorage)
   getLogged(){ return JSON.parse(sessionStorage.getItem('logged')||'null'); },
   setLogged(u){ sessionStorage.setItem('logged', JSON.stringify(u)); },
   clearLogged(){ sessionStorage.removeItem('logged'); }
 };
-
-/* ============================
-   Data & UI (same as original, adapted to async)
-   ============================ */
 
 const DATA = {
   services: [
@@ -426,7 +396,6 @@ const actions = {
     if(users.find(u=>u.email===email)) return ui.toast('E-mail já cadastrado', 'error',2000);
     await DB.addUser({ nome, email, senha, tipo });
     ui.toast('Conta criada com sucesso', 'success', 2200);
-    // save logged in session (sessionStorage)
     DB.setLogged({ nome, email, tipo });
     ui.show(tipo==='profissional' ? 'proPanel' : 'clientDashboard');
   },
@@ -461,7 +430,6 @@ const actions = {
     const user = DB.getLogged();
     if(!user) { ui.toast('Faça login para prosseguir', 'error', 1600); ui.show('login'); return; }
 
-    // check occupancy on server
     const global = await DB.getGlobal();
     const currentCount = global.filter(a => a.dataISO===DATA.selectedDate && a.horario===DATA.selectedTime && a.servicoId===DATA.selectedServiceId).length;
     if(currentCount >= DATA.capacityPerSlot) { ui.toast('Vagas esgotadas para esse horário', 'error', 1800); ui.renderSlots(); return; }
@@ -479,7 +447,6 @@ const actions = {
       createdAt: new Date().toISOString()
     };
 
-    // save booking on server
     await DB.addBooking(booking);
 
     ui.toast('Agendamento confirmado — preparando confirmação por e-mail...', 'success', 2400);
@@ -488,7 +455,6 @@ const actions = {
       ui.toast(`E-mail de confirmação enviado para ${booking.email}`, 'info', 2600);
     }, 600);
 
-    // reset selection
     DATA.selectedServiceId = null; DATA.selectedTime = null;
     document.getElementById('selDate').value = '';
     setTimeout(()=> ui.show('clientDashboard'), 800);
@@ -580,30 +546,23 @@ const actions = {
   }
 };
 
-/* ============================
-   Initialization
-   ============================ */
-
 async function initDefaults(){
-  // ensure admin exists on server
   try {
     const users = await DB.getUsers();
     if(!users.some(u=>u.email==='admin')){
       await DB.addUser({ nome:'Administrador', email:'admin', senha:'1234', tipo:'profissional' });
     }
-  } catch(e){ /* ignore */ }
+  } catch(e){}
 
-  // ensure settings exist
   try {
     const settings = await DB.getSettings();
     if(!settings || !settings.capacidadePorHorario){
       await DB.setSettings({ capacidadePorHorario: 3 });
     }
-  } catch(e){ /* ignore */ }
+  } catch(e){}
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
-  // populate filters
   const fService = document.getElementById('filterService');
   const fTime = document.getElementById('filterTime');
   DATA.services.forEach(s=>{
@@ -613,12 +572,10 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     const o = document.createElement('option'); o.value = t; o.textContent = t; fTime.appendChild(o);
   });
 
-  // run defaults and set capacity
   await initDefaults();
   const settings = await DB.getSettings();
   if(settings && settings.capacidadePorHorario) DATA.capacityPerSlot = settings.capacidadePorHorario;
 
-  // set date min
   const dateInputs = document.querySelectorAll('input[type="date"]');
   const today = new Date().toISOString().slice(0,10);
   dateInputs.forEach(d=> d.setAttribute('min', today));
